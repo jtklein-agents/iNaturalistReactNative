@@ -325,3 +325,17 @@ In-depth architecture and convention docs for both humans and AI agents. Read th
 6. **M-series Mac Android builds:** May need specific NDK version (see `android/build.gradle`)
 7. **i18next in tests:** Must initialize with `await initI18next()` in `beforeAll`
 8. **Detox simulator:** Create simulator matching `.detoxrc.js` config in Xcode
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as GitHub issues on jtklein-agents/iNaturalistReactNative (origin). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Five canonical roles, each label string equal to its name (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
