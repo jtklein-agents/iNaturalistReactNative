@@ -19,6 +19,7 @@ import type { TabStackScreenProps } from "navigation/types";
 import { RealmContext } from "providers/contexts";
 import React, { useMemo, useState } from "react";
 import Project from "realmModels/Project";
+import type { RealmProject } from "realmModels/types";
 import { log } from "sharedHelpers/logger";
 import safeRealmWrite from "sharedHelpers/safeRealmWrite";
 import { useAuthenticatedMutation, useAuthenticatedQuery, useCurrentUser } from "sharedHooks";
@@ -201,34 +202,57 @@ const ProjectDetailsContainer = ( ) => {
     } );
   };
 
-  const enrichedProject = useMemo( ( ) => {
-    if ( !project ) return null;
+  const cachedRealmProject = realm.objectForPrimaryKey<RealmProject>( "Project", id );
 
-    return {
-      admins: project.admins,
-      description: project.description,
-      header_image_url: project.header_image_url,
-      icon: project.icon,
-      id: project.id,
-      membership_model: project.membership_model,
-      project_observation_fields: project.project_observation_fields,
-      project_observation_rules: project.project_observation_rules,
-      project_type: project.project_type,
-      rule_preferences: project.rule_preferences,
-      title: project.title,
-      members_count: project.user_ids.length,
+  const enrichedProject = useMemo( ( ) => {
+    // Joined-project Realm rows are membership; use that when the live check is unavailable
+    const currentUserIsMember = currentMembership != null
+      ? currentMembership.total_results === 1
+      : !!cachedRealmProject;
+    const counts = {
       journal_posts_count: projectPosts,
       observations_count: projectStats?.total_results,
       species_count: speciesCounts?.total_results,
-      current_user_is_member: currentMembership?.total_results === 1,
+      current_user_is_member: currentUserIsMember,
       current_user_observations_count: usersObservations?.total_results,
     };
+
+    if ( project ) {
+      return {
+        admins: project.admins,
+        description: project.description,
+        header_image_url: project.header_image_url,
+        icon: project.icon,
+        id: project.id,
+        membership_model: project.membership_model,
+        project_observation_fields: project.project_observation_fields,
+        project_observation_rules: project.project_observation_rules,
+        project_type: project.project_type,
+        rule_preferences: project.rule_preferences,
+        title: project.title,
+        members_count: project.user_ids.length,
+        ...counts,
+      };
+    }
+
+    if ( !cachedRealmProject ) return null;
+
+    return {
+      admins: null,
+      header_image_url: null,
+      membership_model: null,
+      members_count: undefined,
+      ...Project.mapRealmToDetailsPojo( cachedRealmProject, realm ),
+      ...counts,
+    };
   }, [
+    cachedRealmProject,
+    currentMembership,
     project,
     projectPosts,
     projectStats?.total_results,
+    realm,
     speciesCounts?.total_results,
-    currentMembership?.total_results,
     usersObservations?.total_results,
   ] );
 

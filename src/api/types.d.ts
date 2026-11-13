@@ -332,6 +332,7 @@ export interface ApiProject extends ApiProjectSummary {
 
 // Result from using PROJECT_SUMMARY_POF_FIELDS
 export interface ApiProjectSummaryWithPOF extends ApiProjectSummary {
+  description?: string | null;
   project_observation_fields: ApiProjectObservationField[];
   project_observation_rules: ApiProjectObservationRule[];
 }
