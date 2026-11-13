@@ -18,31 +18,6 @@ describe( "Project", ( ) => {
     } );
   } );
 
-  describe( "mapRealmToDetailsPojo", ( ) => {
-    it( "exposes API-shaped POFs and rules for project detail", ( ) => {
-      const mockRemoteProject = factory( "RemoteProject", {
-        project_observation_rules: [
-          factory( "RemoteProjectObservationRule", {
-            operand_id: null,
-            operator: "georeferenced?",
-            taxon: undefined,
-          } ),
-        ],
-        project_type: "",
-      } );
-      Project.upsertRemoteProjects( [mockRemoteProject], global.realm );
-      const realmProject = global.realm.objectForPrimaryKey( "Project", mockRemoteProject.id );
-
-      const details = Project.mapRealmToDetailsPojo( realmProject, global.realm );
-
-      expect( details.project_observation_rules[0].operator ).toBe( "georeferenced?" );
-      expect( details.project_observation_fields[0].observation_field.id ).toBe(
-        mockRemoteProject.project_observation_fields[0].observation_field.id,
-      );
-      expect( details.rule_preferences ).toEqual( [] );
-    } );
-  } );
-
   describe( "mapApiToRealm", ( ) => {
     it( "maps summary fields and POFs", ( ) => {
       const mockRemoteProject = factory( "RemoteProject" );

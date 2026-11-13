@@ -73,8 +73,17 @@ interface Project {
   members_count?: number;
   observations_count?: number;
   project_observation_fields?: ApiProjectObservationField[];
-  project_observation_rules?: ApiProjectObservationRule[];
-  project_type: ApiProjectType;
+  // From Project.mapRealmToPojo when live detail is unavailable
+  projectObservationFields?: {
+    obsField?: { id: number; name?: string | null } | null;
+  }[];
+  project_observation_rules?: ApiProjectObservationRule[] | {
+    operand_id?: number | null;
+    operator: string;
+    place?: { display_name?: string | null };
+    taxon?: { name?: string | null };
+  }[];
+  project_type: ApiProjectType | string;
   rule_preferences: ProjectRulePreference[];
   species_count?: number;
   title: string;
@@ -151,7 +160,7 @@ const ProjectDetails = ( {
   const isTraditional = isTraditionalProject( project.project_type );
   const projectRuleSentences = buildProjectRuleSentences(
     project.project_observation_rules,
-    project.project_observation_fields,
+    project.project_observation_fields ?? project.projectObservationFields,
     t,
   );
 

@@ -237,12 +237,22 @@ const ProjectDetailsContainer = ( ) => {
 
     if ( !cachedRealmProject ) return null;
 
+    const cachedProject = Project.mapRealmToPojo( cachedRealmProject, realm );
     return {
       admins: null,
+      // description is not in the Project schema yet; About body stays empty offline
+      description: "",
       header_image_url: null,
+      icon: cachedProject.icon ?? "",
+      id: cachedProject.id,
       membership_model: null,
       members_count: undefined,
-      ...Project.mapRealmToDetailsPojo( cachedRealmProject, realm ),
+      projectObservationFields: cachedProject.projectObservationFields,
+      project_observation_rules: cachedProject.project_observation_rules,
+      project_type: cachedProject.project_type ?? "",
+      // Joined cache is traditional-only; collection rule_preferences are not persisted
+      rule_preferences: [],
+      title: cachedProject.title ?? "",
       ...counts,
     };
   }, [

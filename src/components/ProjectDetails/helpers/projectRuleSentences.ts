@@ -4,24 +4,45 @@ import type {
 } from "api/types";
 import type { TFunction } from "i18next";
 
+// Live detail uses observation_field; mapRealmToPojo uses obsField.
+type ProjectObservationFieldForNames = ApiProjectObservationField | {
+  obsField?: { id: number; name?: string | null } | null;
+};
+
+// Live API rules or mapRealmToPojo rebuilds — only fields the sentences need.
+interface ProjectRuleForSentence {
+  operand_id?: number | null;
+  operator: string;
+  place?: { display_name?: string | null } | null;
+  taxon?: { name?: string | null } | null;
+}
+
 const observationFieldNameById = (
-  projectObservationFields: ApiProjectObservationField[] | undefined,
+  projectObservationFields: ProjectObservationFieldForNames[] | undefined,
 ): Map<number, string> => {
   const map = new Map<number, string>( );
   projectObservationFields?.forEach( pof => {
-    map.set( pof.observation_field.id, pof.observation_field.name );
+    if ( "observation_field" in pof && pof.observation_field ) {
+      map.set( pof.observation_field.id, pof.observation_field.name );
+      return;
+    }
+    if ( "obsField" in pof && pof.obsField?.id != null ) {
+      map.set( pof.obsField.id, pof.obsField.name ?? "" );
+    }
   } );
   return map;
 };
 
 const ruleToSentence = (
-  rule: ApiProjectObservationRule,
+  rule: ProjectRuleForSentence,
   fieldNamesByID: Map<number, string>,
   t: TFunction,
 ): string | null => {
   switch ( rule.operator ) {
     case "has_observation_field?": {
-      const name = fieldNamesByID.get( rule.operand_id );
+      const name = rule.operand_id == null
+        ? undefined
+        : fieldNamesByID.get( rule.operand_id );
       return t( "must-have-observation-field-x-filled-out", { name } );
     }
     case "georeferenced?":
@@ -58,8 +79,8 @@ const ruleToSentence = (
 };
 
 const buildProjectRuleSentences = (
-  rules: ApiProjectObservationRule[] | undefined,
-  projectObservationFields: ApiProjectObservationField[] | undefined,
+  rules: ( ApiProjectObservationRule | ProjectRuleForSentence )[] | undefined,
+  projectObservationFields: ProjectObservationFieldForNames[] | undefined,
   t: TFunction,
 ): string[] => {
   if ( !rules?.length ) {

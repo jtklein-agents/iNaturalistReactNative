@@ -1,10 +1,5 @@
 import { Realm } from "@realm/react";
-import type {
-  ApiProjectObservationField,
-  ApiProjectObservationRule,
-  ApiProjectSummaryWithPOF,
-  ApiProjectType,
-} from "api/types";
+import type { ApiProjectSummaryWithPOF } from "api/types";
 import { UpdateMode } from "realm";
 import ProjectObservationField from "realmModels/ProjectObservationField";
 import ProjectObservationRule from "realmModels/ProjectObservationRule";
@@ -76,43 +71,6 @@ class Project extends Realm.Object {
         .map( rule => ProjectObservationRule.mapRealmToPojo( rule, realm ) ),
       project_type: realmProject.project_type,
       title: realmProject.title,
-    };
-  }
-
-  // Detail UI expects API field names (observation_field); Add-to-Projects keeps obsField.
-  static mapRealmToDetailsPojo( realmProject: RealmProject, realm: Realm ) {
-    const pojo = Project.mapRealmToPojo( realmProject, realm );
-    const projectObservationFields: ApiProjectObservationField[] = pojo.projectObservationFields
-      .flatMap( pof => {
-        const { obsField } = pof;
-        if ( obsField?.id == null ) return [];
-        return [{
-          id: pof.id,
-          observation_field: {
-            allowed_values: obsField.allowedValues.length > 0
-              ? obsField.allowedValues.join( "|" )
-              : null,
-            datatype: obsField.datatype ?? "",
-            description: obsField.description ?? null,
-            id: obsField.id,
-            name: obsField.name ?? "",
-          },
-          position: pof.position,
-          required: pof.required,
-        }];
-      } );
-    return {
-      // description is not in the Project schema yet; About body stays empty offline
-      description: "",
-      icon: pojo.icon ?? "",
-      id: pojo.id,
-      project_observation_fields: projectObservationFields,
-      project_observation_rules:
-        pojo.project_observation_rules as ApiProjectObservationRule[],
-      project_type: ( pojo.project_type ?? "" ) as ApiProjectType,
-      // Joined cache is traditional-only; collection rule_preferences are not persisted
-      rule_preferences: [],
-      title: pojo.title ?? "",
     };
   }
 
