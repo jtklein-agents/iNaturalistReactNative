@@ -82,7 +82,6 @@ export interface RealmProjectObservationRule extends RealmObject {
 }
 
 export interface RealmProject extends RealmObject {
-  description?: string;
   icon?: string;
   id: number;
   projectObservationFields: RealmProjectObservationField[];

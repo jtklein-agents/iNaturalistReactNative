@@ -65,7 +65,6 @@ class Project extends Realm.Object {
     const pojoPOFs = realmProject.projectObservationFields
       .map( pof => ProjectObservationField.mapRealmToPojo( pof ) );
     return {
-      description: realmProject.description,
       icon: realmProject.icon,
       id: realmProject.id,
       projectObservationFields: pojoPOFs.length > 0
@@ -103,7 +102,8 @@ class Project extends Realm.Object {
         }];
       } );
     return {
-      description: pojo.description ?? "",
+      // description is not in the Project schema yet; About body stays empty offline
+      description: "",
       icon: pojo.icon ?? "",
       id: pojo.id,
       project_observation_fields: projectObservationFields,
@@ -120,7 +120,6 @@ class Project extends Realm.Object {
     name: "Project",
     primaryKey: "id",
     properties: {
-      description: "string?",
       icon: "string?",
       id: "int",
       projectObservationFields: "ProjectObservationField[]",

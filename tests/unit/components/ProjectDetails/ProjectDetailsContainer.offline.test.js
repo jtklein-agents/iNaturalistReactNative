@@ -7,7 +7,6 @@ import factory from "tests/factory";
 import { renderComponent } from "tests/helpers/render";
 
 const mockCachedProject = factory( "RemoteProject", {
-  description: "Offline about from Realm",
   project_observation_fields: [],
   project_observation_rules: [
     factory( "RemoteProjectObservationRule", {
@@ -68,10 +67,10 @@ beforeEach( ( ) => {
 } );
 
 describe( "ProjectDetailsContainer offline cache", ( ) => {
-  it( "renders About and Project Rules from Realm when live project is unavailable", ( ) => {
+  it( "renders Project Rules from Realm when live project is unavailable", ( ) => {
     renderComponent( <ProjectDetailsContainer /> );
 
-    expect( screen.getByText( "Offline about from Realm" ) ).toBeVisible( );
+    expect( screen.getByText( "Cached Traditional Project" ) ).toBeVisible( );
     expect( screen.getByText( /PROJECT RULES/ ) ).toBeVisible( );
     expect( screen.getByText( /must be georeferenced/ ) ).toBeVisible( );
   } );

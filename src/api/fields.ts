@@ -100,7 +100,6 @@ export const PROJECT_DETAIL_FIELDS = {
 
 export const PROJECT_SUMMARY_POF_FIELDS = {
   ...PROJECT_SUMMARY_FIELDS,
-  description: true,
   project_observation_fields: PROJECT_OBSERVATION_FIELDS_FIELDS,
   project_observation_rules: PROJECT_OBSERVATION_RULE_FIELDS,
 };

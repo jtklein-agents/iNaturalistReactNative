@@ -16,22 +16,11 @@ describe( "Project", ( ) => {
       expect( mappedProject.projectObservationFields.map( pof => pof.position ) )
         .toEqual( [0, 1, 2] );
     } );
-
-    it( "includes description for offline About", ( ) => {
-      const mockProject = factory( "LocalProject", {
-        description: "Cached about text",
-      } );
-
-      const mappedProject = Project.mapRealmToPojo( mockProject, global.realm );
-
-      expect( mappedProject.description ).toBe( "Cached about text" );
-    } );
   } );
 
   describe( "mapRealmToDetailsPojo", ( ) => {
     it( "exposes API-shaped POFs and rules for project detail", ( ) => {
       const mockRemoteProject = factory( "RemoteProject", {
-        description: "Detail about",
         project_observation_rules: [
           factory( "RemoteProjectObservationRule", {
             operand_id: null,
@@ -46,7 +35,6 @@ describe( "Project", ( ) => {
 
       const details = Project.mapRealmToDetailsPojo( realmProject, global.realm );
 
-      expect( details.description ).toBe( "Detail about" );
       expect( details.project_observation_rules[0].operator ).toBe( "georeferenced?" );
       expect( details.project_observation_fields[0].observation_field.id ).toBe(
         mockRemoteProject.project_observation_fields[0].observation_field.id,
@@ -99,7 +87,6 @@ describe( "Project", ( ) => {
     it( "persists rules that survive mapRealmToPojo", ( ) => {
       const mockRule = factory( "RemoteProjectObservationRule" );
       const mockRemoteProject = factory( "RemoteProject", {
-        description: "About from sync",
         project_observation_rules: [mockRule],
         rule_preferences: [
           { field: "d1", value: "2026-09-10" },
@@ -115,7 +102,6 @@ describe( "Project", ( ) => {
       const pojo = Project.mapRealmToPojo( upsertedProject, global.realm );
       const savedTaxon = global.realm.objectForPrimaryKey( "Taxon", mockRule.taxon.id );
       expect( Array.from( savedTaxon.ancestor_ids ) ).toEqual( mockRule.taxon.ancestor_ids );
-      expect( pojo.description ).toBe( "About from sync" );
       expect( pojo.project_observation_rules[0].taxon.id ).toBe( mockRule.operand_id );
     } );
 
