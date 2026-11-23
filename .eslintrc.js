@@ -14,7 +14,7 @@ module.exports = {
     },
   },
   extends: [
-    "airbnb",
+    "@react-native",
     "plugin:@tanstack/query/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:i18next/recommended",
@@ -23,6 +23,7 @@ module.exports = {
   ],
   plugins: [
     "@stylistic",
+    "import",
     "@tanstack/query",
     "@typescript-eslint",
     "lodash",
